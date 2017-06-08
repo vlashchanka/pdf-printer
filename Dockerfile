@@ -14,4 +14,6 @@ ADD ./ /pdf-printer/
 RUN cd /pdf-printer/ && npm install
 EXPOSE 3000
 
+RUN google-chrome-stable --headless --disable-gpu --no-sandbox --remote-debugging-port=9222
+
 CMD cd /pdf-printer/src && node app.js
