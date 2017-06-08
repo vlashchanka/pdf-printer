@@ -67,14 +67,12 @@ router.get('/', (req, res) => {
       status[jobId] = {
         status: 'printing ...'
       };
-      isBusy = true;
+
       return printNow(workDir, url);
     }).then(() => {
-      isBusy = false;
       status[jobId] = { status: 'ready', download: `http://${req.headers.host}/print/download?jobId=${jobId}` };
       console.log(`${jobId} is ready!`);
     }).catch((err) => {
-      isBusy = false;
       console.log(`Error for ${jobId}!`);
       console.log(err);
       status[jobId] = { status: 'error', message: err };
