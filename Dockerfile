@@ -1,5 +1,5 @@
 # Replace with image from Docker.chrome
-FROM gcr.io/callmyapp/chrome-headless:v4
+FROM gcr.io/callmyapp/chrome-headless:v5
 
 WORKDIR /
 
