@@ -1,0 +1,19 @@
+{
+  "name": "pdf-printer",
+  "version": "1.0.0",
+  "description": "Service allows to get web page as PDF file. Based on Chrome Headless",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "pdf",
+    "chrome",
+    "print"
+  ],
+  "author": "Nick Sakovich",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.3"
+  }
+}
