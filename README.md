@@ -2,4 +2,4 @@
 
 Run with this command: ```cd src/ && node app.js```
 
-It will start server. Open ```http://localhost:3000/printer?url=http://google.com``` for test.
+It will start server. Open ```http://localhost:3000/print?url=http://google.com``` for test.
