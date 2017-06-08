@@ -1,3 +1,4 @@
+# Replace with image from Docker.chrome
 FROM gcr.io/callmyapp/chrome-headless:v3
 
 WORKDIR /
