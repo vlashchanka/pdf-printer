@@ -8,6 +8,8 @@ let status = {};
 
 let chromeExe = process.env.CHROME_EXE || "/Applications/'Google\ Chrome.app'/Contents/MacOS/'Google\ Chrome'";
 
+let connectToChrome = require('chrome-remote-interface');
+
 let exec = (cmd, options) => {
   return new Promise((resolve, reject) => {
     execCmd(cmd, options, (error, stdout, stderr) => {
@@ -18,6 +20,46 @@ let exec = (cmd, options) => {
       }
     });
   });
+};
+
+let printWithRemote = (workDir, url, timeout) => {
+  console.log(`Printing URL: ${url}`);
+
+  return new Promise((resolve, reject) => {
+    connectToChrome((client) => {
+      const {Network, Page} = client;
+
+      Promise.all([ Network.enable(), Page.enable() ]).then(() => {
+        console.log(`Navigate to ${url}`);
+        return Page.navigate({url});
+      }).then(() => {
+        console.log(`Wait a little ...`);
+        return new Promise((resolve, reject) => { setTimeout(() => { resolve(); }, timeout * 1000); })
+      }).then(() => {
+        console.log(`Print PDF ...`);
+        return Page.printToPDF();
+      }).then((pdf) => {
+        console.log(`Printed ...`);
+        return new Promise(() => {
+          fs.writeFile(`${workDir}/output.pdf`, Buffer.from(pdf.data, 'base64'), (err) => {
+            console.log('Saving file ...');
+            
+            if (!err) {
+              resolve();
+              client.close();
+            } else {
+              reject(err);
+            }
+          });
+        });
+      }).catch((err) => {
+        console.log(err);
+        client.close();
+        reject(err);
+      });
+    });
+
+  })
 };
 
 let printNow = (workDir, url) => {
@@ -58,6 +100,7 @@ router.get('/download', (req, res) => {
 
 router.get('/', (req, res) => {
   let url = req.query.url;
+  let timeout = req.query.timeout || 0;
 
   if (url) {
     let jobId = new Date().getTime();
@@ -68,7 +111,7 @@ router.get('/', (req, res) => {
         status: 'printing ...'
       };
 
-      return printNow(workDir, url);
+      return printWithRemote(workDir, url, timeout);
     }).then(() => {
       status[jobId] = { status: 'ready', download: `http://${req.headers.host}/print/download?jobId=${jobId}` };
       console.log(`${jobId} is ready!`);
